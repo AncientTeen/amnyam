@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 import numpy as np
-from sndDim import *
-import pingouin as pg
 import pandas as pd
+import pingouin as pg
+from sklearn.model_selection import train_test_split
+
+from sndDim import *
 
 
 def corrMatrix(buff):
@@ -90,11 +94,32 @@ def multRegr(buff, y_sample=1, bound=[1, 10]):
     Y_sq = std_err(Y, y_avr)
     X_sq = [std_err(X[i], x_avr[i]) for i in range(len(X))]
 
-
-
     Y_low, Y_hat, Y_up = multRegrConfInt(Y, X, A, a_null, C, S_zal)
 
     return A, a_null, C, S_zal, Y_sq, X_sq, Y_low, Y_hat, Y_up, e, Y
+
+
+def multRegrML(buff: List[List], y_sample: int = 1) -> Union[List[List], float, float]:
+    Y = buff[y_sample - 1]
+    X = np.delete(buff, y_sample - 1, 0)
+    X = X.T
+
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=101)
+    X_train = X_train.T
+    X_test = X_test.T
+
+    y_avr = average(y_train)
+    x_avr = [average(X_train[i]) for i in range(len(X_train))]
+
+    Y_null = [y_train[i] - y_avr for i in range(len(y_train))]
+    X_null = [[(X_train[i][j] - x_avr[i]) for j in range(len(X_train[0]))] for i in range(len(X_train))]
+    A = np.linalg.inv(X_null @ np.transpose(X_null)) @ X_null @ np.transpose(Y_null)
+    a_null = y_avr - sum([A[i] * x_avr[i] for i in range(len(X_train))])
+
+    e = [y_test[i] - a_null - sum([A[j] * X_test[j][i] for j in range(len(A))]) for i in range(len(y_test))]
+    S_zal = (1 / (len(y_test) - len(buff))) * sum([e[i] ** 2 for i in range(len(e))])
+
+    return A, a_null, S_zal
 
 
 def multRegrConfInt(Y, X, A, a_null, C, S_zal):
@@ -108,7 +133,5 @@ def multRegrConfInt(Y, X, A, a_null, C, S_zal):
 
     Y_low = [Y_hat[i] - t_quant * np.sqrt(S_zal) * np.sqrt(1 + X[i] @ C @ np.transpose(X[i])) for i in range(len(Y))]
     Y_up = [Y_hat[i] + t_quant * np.sqrt(S_zal) * np.sqrt(1 + X[i] @ C @ np.transpose(X[i])) for i in range(len(Y))]
-
-
 
     return Y_low, Y_hat, Y_up

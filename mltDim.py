@@ -214,163 +214,190 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
         t_quant = 1.96
 
     """Кореляція"""
-    T3.insert(END, f"Часткові коефіцієнти кореляції\n")
-    t_par_corr = {}
-    for pair, coeff in partial_corr_coefficients.items():
-        T3.insert(END, f"Частковий коефіцієнт кореляції між {pair}: {coeff:.4f}\n")
-        ic(pair)
-        t_par_corr[pair] = coeff * np.sqrt(len(buff[0]) - len(buff) - 2) / np.sqrt(1 - coeff ** 2)
-    T3.insert(END, f"\n")
+    try:
+        T3.insert(END, f"Часткові коефіцієнти кореляції\n")
+        t_par_corr = {}
+        for pair, coeff in partial_corr_coefficients.items():
+            T3.insert(END, f"Частковий коефіцієнт кореляції між {pair}: {coeff:.4f}\n")
+            ic(pair)
+            t_par_corr[pair] = coeff * np.sqrt(len(buff[0]) - len(buff) - 2) / np.sqrt(1 - coeff ** 2)
+        T3.insert(END, f"\n")
 
-    T3.insert(END, f"Перевірка значущості коефіцієнтів\n")
-    for pair, t_coeff in t_par_corr.items():
-        if abs(t_coeff) > t_quant:
-            T3.insert(END, f"Коефіцієнт між {pair} незначущий: |{t_coeff:.4f}| > {t_quant}\n")
-        else:
-            T3.insert(END, f"Коефіцієнт між {pair} значущий: |{t_coeff:.4f}| < {t_quant}\n")
-    T3.insert(END, f"\n")
+        T3.insert(END, f"Перевірка значущості коефіцієнтів\n")
+        for pair, t_coeff in t_par_corr.items():
+            if abs(t_coeff) > t_quant:
+                T3.insert(END, f"Коефіцієнт між {pair} незначущий: |{t_coeff:.4f}| > {t_quant}\n")
+            else:
+                T3.insert(END, f"Коефіцієнт між {pair} значущий: |{t_coeff:.4f}| < {t_quant}\n")
+        T3.insert(END, f"\n")
 
-    сonf_partial_corr_coefficients = confIntr_partCorrCoff(buff)
-    T3.insert(END, f"Довірчі інтервали для коефіцієнтів\n")
-    for pair, conf_intr in сonf_partial_corr_coefficients.items():
-        ic(conf_intr)
-        T3.insert(END, f"Довірчий інтервал між {pair}: [{conf_intr[0][0]}, {conf_intr[0][1]}]\n")
-    T3.insert(END, f"\n")
+        сonf_partial_corr_coefficients = confIntr_partCorrCoff(buff)
+        T3.insert(END, f"Довірчі інтервали для коефіцієнтів\n")
+        for pair, conf_intr in сonf_partial_corr_coefficients.items():
+            ic(conf_intr)
+            T3.insert(END, f"Довірчий інтервал між {pair}: [{conf_intr[0][0]}, {conf_intr[0][1]}]\n")
+        T3.insert(END, f"\n")
 
-    T3.insert(END, f"Множинні коефіцієнти кореляції\n")
-    multiCorrelationCoff = multCorrCoff(corrMatr)
-    f = []
-    for i in range(len(multiCorrelationCoff)):
-        T3.insert(END, f"r({i + 1}) = {multiCorrelationCoff[i]:.4f}\n")
-        f.append(((len(buff[0]) - len(buff) - 1) / len(buff)) * (
-                multiCorrelationCoff[i] ** 2 / (1 - multiCorrelationCoff[i] ** 2)))
+        T3.insert(END, f"Множинні коефіцієнти кореляції\n")
+        multiCorrelationCoff = multCorrCoff(corrMatr)
+        f = []
+        for i in range(len(multiCorrelationCoff)):
+            T3.insert(END, f"r({i + 1}) = {multiCorrelationCoff[i]:.4f}\n")
+            f.append(((len(buff[0]) - len(buff) - 1) / len(buff)) * (
+                    multiCorrelationCoff[i] ** 2 / (1 - multiCorrelationCoff[i] ** 2)))
 
-    T3.insert(END, f"\n")
+        T3.insert(END, f"\n")
 
-    dfn = len(buff)
-    dfd = len(buff[0]) - len(buff) - 1
-    f_quant = ss.f.ppf(0.95, dfn=dfn, dfd=dfd)
+        dfn = len(buff)
+        dfd = len(buff[0]) - len(buff) - 1
+        f_quant = ss.f.ppf(0.95, dfn=dfn, dfd=dfd)
 
-    T3.insert(END, f"Перевірка значущості коефіцієнтів\n")
-    for i in range(len(f)):
-        if f[i] >= f_quant:
-            T3.insert(END, f"r({i + 1}): f = {f[i]:.4f} >= {f_quant:.4f} --> Коефіцієнт значущий\n")
-        else:
-            T3.insert(END, f"r({i + 1}): f = {f[i]:.4f} < {f_quant:.4f} --> Коефіцієнт незначущий\n")
-    T3.insert(END, f"\n")
+        T3.insert(END, f"Перевірка значущості коефіцієнтів\n")
+        for i in range(len(f)):
+            if f[i] >= f_quant:
+                T3.insert(END, f"r({i + 1}): f = {f[i]:.4f} >= {f_quant:.4f} --> Коефіцієнт значущий\n")
+            else:
+                T3.insert(END, f"r({i + 1}): f = {f[i]:.4f} < {f_quant:.4f} --> Коефіцієнт незначущий\n")
+        T3.insert(END, f"\n")
+    except Exception as e:
+        print("The error is: ", e)
 
     """Регресія"""
+    try:
+        T4.insert(END, f"Лінійна регресія\n")
+        A, a_null, C, S_zal, Y_sq, X_sq, Y_low, Y_hat, Y_up, e, Y_viz = multRegr(buff, y_sample)
 
-    T4.insert(END, f"Лінійна регресія\n")
-    A, a_null, C, S_zal, Y_sq, X_sq, Y_low, Y_hat, Y_up, e, Y_viz = multRegr(buff, y_sample)
+        alpha = 0.05
+        df = len(buff[0]) - len(buff)
+        quantile_lower = chi2.ppf((1 - (1 - alpha)) / 2, df)
+        quantile_upper = chi2.ppf((1 + (1 - alpha)) / 2, df)
 
-    alpha = 0.05
-    df = len(buff[0]) - len(buff)
-    quantile_lower = chi2.ppf((1 - (1 - alpha)) / 2, df)
-    quantile_upper = chi2.ppf((1 + (1 - alpha)) / 2, df)
+        lower_bound = S_zal * (len(buff[0]) - len(buff)) / quantile_upper
+        upper_bound = S_zal * (len(buff[0]) - len(buff)) / quantile_lower
 
-    lower_bound = S_zal * (len(buff[0]) - len(buff)) / quantile_upper
-    upper_bound = S_zal * (len(buff[0]) - len(buff)) / quantile_lower
-
-    T4.insert(END, f"x{y_sample} = {a_null:.4f}")
-    xi = 0
-    for i in range(len(A)):
-        xi += 1
-        if i + 1 == y_sample:
+        T4.insert(END, f"x{y_sample} = {a_null:.4f}")
+        xi = 0
+        for i in range(len(A)):
             xi += 1
-        T4.insert(END, f" + ({A[i]:.4f}) * x{xi}")
-    T4.insert(END, f"\n")
+            if i + 1 == y_sample:
+                xi += 1
+            T4.insert(END, f" + ({A[i]:.4f}) * x{xi}")
+        T4.insert(END, f"\n")
+        T4.insert(END, f"Оцінка залишкової дисперсії: {S_zal:.4f}\n")
+        T4.insert(END, f"\n")
 
-    T4.insert(END, f"\nІнтервальна оцінка параметрів\n")
-    t_buff = [t_quant * S_zal * np.sqrt(C[i][i]) for i in range(len(C))]
-    xi = 0
-    for i in range(len(A)):
-        xi += 1
-        if i + 1 == y_sample:
+
+        T4.insert(END, f"\nІнтервальна оцінка параметрів\n")
+        t_buff = [t_quant * S_zal * np.sqrt(C[i][i]) for i in range(len(C))]
+        xi = 0
+        for i in range(len(A)):
             xi += 1
-        T4.insert(END, f"a{xi}: [{(A[i] - t_buff[i]):.4f}, {(A[i] + t_buff[i]):4f}]\n")
-    T4.insert(END, f"\n")
+            if i + 1 == y_sample:
+                xi += 1
+            T4.insert(END, f"a{xi}: [{(A[i] - t_buff[i]):.4f}, {(A[i] + t_buff[i]):4f}]\n")
+        T4.insert(END, f"\n")
 
-    T4.insert(END, f"Значущість параметрів регресії\n")
-    t_a = [A[i] / np.sqrt(S_zal * C[i][i]) for i in range(len(A))]
-    xi = 0
-    for i in range(len(A)):
-        xi += 1
-        if i + 1 == y_sample:
+        T4.insert(END, f"Значущість параметрів регресії\n")
+        t_a = [A[i] / np.sqrt(S_zal * C[i][i]) for i in range(len(A))]
+        xi = 0
+        for i in range(len(A)):
             xi += 1
+            if i + 1 == y_sample:
+                xi += 1
 
-        if abs(t_a[i]) <= t_quant:
-            T4.insert(END, f"t{xi}: |{t_a[i]:.4f}| <= {t_quant} --> параметр а{xi} є незначущим\n")
+            if abs(t_a[i]) <= t_quant:
+                T4.insert(END, f"t{xi}: |{t_a[i]:.4f}| <= {t_quant} --> параметр а{xi} є незначущим\n")
+            else:
+                T4.insert(END, f"t{xi}: |{t_a[i]:.4f}| > {t_quant} --> параметр а{xi} є значущим\n")
+
+        T4.insert(END, f"\nСтандартизована оцінка параметрів регресії\n")
+        std_A = [(A[i] * X_sq[i]) / Y_sq for i in range(len(A))]
+        xi = 0
+        for i in range(len(A)):
+            xi += 1
+            if i + 1 == y_sample:
+                xi += 1
+            T4.insert(END, f"a{xi} = {std_A[i]:.4f}\n")
+        T4.insert(END, f"\n")
+
+        T4.insert(END, f"Коефіцієнт детермінації\n")
+        R_square = multiCorrelationCoff[y_sample - 1]
+        T4.insert(END, f"R^2 = {R_square * 100:.4f}%\n")
+        T4.insert(END, f"\n")
+
+        T4.insert(END, f"Перевірка значущості відтворення\n")
+        f_repr = (R_square / (1 - R_square)) * (dfd / dfn)
+        if f_repr >= f_quant:
+            T4.insert(END, f"f = {f_repr:.4f} >= {f_quant:.4f} --> Регресійна модель значуща\n")
         else:
-            T4.insert(END, f"t{xi}: |{t_a[i]:.4f}| > {t_quant} --> параметр а{xi} є значущим\n")
+            T4.insert(END, f"f = {f_repr:.4f} < {f_quant:.4f} --> Регресійна модель не значуща\n")
+        T4.insert(END, f"\n")
 
-    T4.insert(END, f"\nСтандартизована оцінка параметрів регресії\n")
-    std_A = [(A[i] * X_sq[i]) / Y_sq for i in range(len(A))]
-    xi = 0
-    for i in range(len(A)):
-        xi += 1
-        if i + 1 == y_sample:
+        T4.insert(END, f"Толерантні межі для залишкової дисперсії\n")
+        T4.insert(END, f"{lower_bound:.4f} <= {S_zal:.4f} <= {upper_bound:.4f}\n")
+        T4.insert(END, f"\n")
+
+        low = regBound[0] - 1
+        up = regBound[1]
+        ic(low, up)
+        T4.insert(END, f"Довірчий інтервал для значення регресії\n")
+        for i in range(low, up):
+            T4.insert(END, f"{Y_low[i]:.4f} <= {Y_hat[i]:.4f} <= {Y_up[i]:.4f}\n")
+        T4.insert(END, f"\n")
+
+        """Регресія за використання принципу машинного навчання"""
+
+        T4.insert(END, f"Лінійна регресія за використання принципу машинного навчання\n")
+        A_ml, a_null_ml, S_zal_ml = multRegrML(buff, y_sample)
+        T4.insert(END, f"x{y_sample} = {a_null_ml:.4f}")
+        xi = 0
+        for i in range(len(A_ml)):
             xi += 1
-        T4.insert(END, f"a{xi} = {std_A[i]:.4f}\n")
-    T4.insert(END, f"\n")
+            if i + 1 == y_sample:
+                xi += 1
+            T4.insert(END, f" + ({A_ml[i]:.4f}) * x{xi}")
+        T4.insert(END, f"\n")
 
-    T4.insert(END, f"Коефіцієнт детермінації\n")
-    R_square = multiCorrelationCoff[y_sample - 1]
-    T4.insert(END, f"R^2 = {R_square * 100:.4f}%\n")
-    T4.insert(END, f"\n")
+        T4.insert(END, f"Оцінка залишкової дисперсії (МН): {S_zal_ml:.4f}\n")
+        T4.insert(END, f"\n")
+    except Exception as e:
+        print("The error is: ", e)
 
-    T4.insert(END, f"Перевірка значущості відтворення\n")
-    f_repr = (R_square / (1 - R_square)) * (dfd / dfn)
-    if f_repr >= f_quant:
-        T4.insert(END, f"f = {f_repr:.4f} >= {f_quant:.4f} --> Регресійна модель значуща\n")
-    else:
-        T4.insert(END, f"f = {f_repr:.4f} < {f_quant:.4f} --> Регресійна модель не значуща\n")
-    T4.insert(END, f"\n")
 
-    T4.insert(END, f"Толерантні межі для залишкової дисперсії\n")
-    T4.insert(END, f"{lower_bound:.4f} <= {S_zal:.4f} <= {upper_bound:.4f}\n")
-    T4.insert(END, f"\n")
-
-    low = regBound[0] - 1
-    up = regBound[1]
-    ic(low, up)
-    T4.insert(END, f"Довірчий інтервал для значення регресії\n")
-    for i in range(low, up):
-        T4.insert(END, f"{Y_low[i]:.4f} <= {Y_hat[i]:.4f} <= {Y_up[i]:.4f}\n")
-    T4.insert(END, f"\n")
 
     """Метод головних компонент"""
+    try:
+        sorted_eigenvalues, sorted_eigenvectors = eigenValsVectors(sample_data)
+        T5.insert(END, f"Результати МГК:\n")
 
-    sorted_eigenvalues, sorted_eigenvectors = eigenValsVectors(sample_data)
-    T5.insert(END, f"Результати МГК:\n")
+        for i in range(len(buff)):
+            T5.insert(END, f"\tx{i + 1}`\t")
+        T5.insert(END, f"\n")
+        for i in range(len(buff)):
+            T5.insert(END, f"x{i + 1}\t")
+            for j in range(len(buff)):
+                T5.insert(END, f"{sorted_eigenvectors[i][j]:.4f}\t\t")
+            T5.insert(END, f"\n")
 
-    for i in range(len(buff)):
-        T5.insert(END, f"\tx{i + 1}`\t")
-    T5.insert(END, f"\n")
-    for i in range(len(buff)):
-        T5.insert(END, f"x{i + 1}\t")
-        for j in range(len(buff)):
-            T5.insert(END, f"{sorted_eigenvectors[i][j]:.4f}\t\t")
+        T5.insert(END, f"\nВласні числа: \t")
+        for i in range(len(buff)):
+            T5.insert(END, f"{sorted_eigenvalues[i]:.4f}\t\t")
         T5.insert(END, f"\n")
 
-    T5.insert(END, f"\nВласні числа: \t")
-    for i in range(len(buff)):
-        T5.insert(END, f"{sorted_eigenvalues[i]:.4f}\t\t")
-    T5.insert(END, f"\n")
+        T5.insert(END, f"\n% на напрям:  \t")
+        percentDir = [sorted_eigenvalues[i] / len(sorted_eigenvalues) for i in range(len(sorted_eigenvalues))]
+        for i in range(len(buff)):
+            T5.insert(END, f"{percentDir[i] * 100:.4f}%\t\t")
+        T5.insert(END, f"\n")
 
-    T5.insert(END, f"\n% на напрям:  \t")
-    percentDir = [sorted_eigenvalues[i] / len(sorted_eigenvalues) for i in range(len(sorted_eigenvalues))]
-    for i in range(len(buff)):
-        T5.insert(END, f"{percentDir[i] * 100:.4f}%\t\t")
-    T5.insert(END, f"\n")
-
-    T5.insert(END, f"\nНакопичений %:\t")
-    perc = 0
-    for i in range(len(buff)):
-        perc += percentDir[i] * 100
-        T5.insert(END, f"{perc:.4f}%\t\t")
-    T5.insert(END, f"\n\n")
-
+        T5.insert(END, f"\nНакопичений %:\t")
+        perc = 0
+        for i in range(len(buff)):
+            perc += percentDir[i] * 100
+            T5.insert(END, f"{perc:.4f}%\t\t")
+        T5.insert(END, f"\n\n")
+    except Exception as e:
+        print("The error is: ", e)
     return e, Y_viz
 
 
