@@ -98,30 +98,6 @@ def multRegr(buff, y_sample=1, bound=[1, 10]):
 
     return A, a_null, C, S_zal, Y_sq, X_sq, Y_low, Y_hat, Y_up, e, Y
 
-
-def multRegrML(buff: List[List], y_sample: int = 1) -> Union[List[List], float, float]:
-    Y = buff[y_sample - 1]
-    X = np.delete(buff, y_sample - 1, 0)
-    X = X.T
-
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=101)
-    X_train = X_train.T
-    X_test = X_test.T
-
-    y_avr = average(y_train)
-    x_avr = [average(X_train[i]) for i in range(len(X_train))]
-
-    Y_null = [y_train[i] - y_avr for i in range(len(y_train))]
-    X_null = [[(X_train[i][j] - x_avr[i]) for j in range(len(X_train[0]))] for i in range(len(X_train))]
-    A = np.linalg.inv(X_null @ np.transpose(X_null)) @ X_null @ np.transpose(Y_null)
-    a_null = y_avr - sum([A[i] * x_avr[i] for i in range(len(X_train))])
-
-    e = [y_test[i] - a_null - sum([A[j] * X_test[j][i] for j in range(len(A))]) for i in range(len(y_test))]
-    S_zal = (1 / (len(y_test) - len(buff))) * sum([e[i] ** 2 for i in range(len(e))])
-
-    return A, a_null, S_zal
-
-
 def multRegrConfInt(Y, X, A, a_null, C, S_zal):
     if len(Y) > 10 and len(Y) < 120:
         t_quant = 2.105

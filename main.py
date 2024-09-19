@@ -509,7 +509,7 @@ pca_menu.add_command(label="Перехід до незалежних значе�
                      command=lambda: pca_two_frwd(sample_data))
 pca_menu.add_command(label="Зворотній перехід 2n", command=lambda: pca_two_bck(sample_data))
 pca_menu.add_command(label="Перехід по w-ознакам", command=lambda: pcaFnDim(sample_data, sample_menu, sample_checkbuttons))
-pca_menu.add_command(label="Зворотній перехід по w-ознакам", command=lambda: pcaBnDim(sample_data, sample_menu))
+pca_menu.add_command(label="Зворотній перехід по w-ознакам", command=lambda: pcaBnDim(sample_data, sample_menu, sample_checkbuttons))
 
 """criteria"""
 criteria_menu = Menu(menubar, tearoff=0)

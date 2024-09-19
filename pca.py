@@ -109,10 +109,6 @@ def eigenValsVectors(sample_data):
 #         sample_menu.add_checkbutton(label=sample_name, variable=sample_var)
 
 def pca_forw_nDim(sample_data, sorted_eigenvectors, n, sample_menu, sample_checkbuttons):
-    ic('-'*100)
-    ic('hallo')
-    ic('-'*100)
-
     s_n = []
     for i in range(1, len(sample_data) + 1):
         str = f"Вибірка {i}"
@@ -121,16 +117,16 @@ def pca_forw_nDim(sample_data, sorted_eigenvectors, n, sample_menu, sample_check
 
     buff = np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))])
 
-    disp_corr_matrix = dispCorrMatr(buff)
-
     ic(sorted_eigenvectors.shape)
     ic(np.transpose(sorted_eigenvectors)[:n])
-    ic(np.transpose(sorted_eigenvectors)[:n].shape)
+    ic(np.transpose(sorted_eigenvectors[:n]).shape)
+    ic(sorted_eigenvectors[:n].shape)
     ic(buff[:n].shape)
-    buff_trans = np.transpose(buff[:n]) @ np.transpose(sorted_eigenvectors)[:n]
+    # buff_trans = np.transpose(buff[:n]) @ np.transpose(sorted_eigenvectors)[:n]
+    # buff_trans = np.transpose(sorted_eigenvectors[:n]) @ buff[:n]
+    buff_trans = np.transpose(sorted_eigenvectors) @ buff
     ic(buff_trans)
-    buff_trans = np.transpose(buff_trans)
-
+    # buff_trans = np.transpose(buff_trans)
     for checkbutton in sample_checkbuttons:
         checkbutton.destroy()
     sample_checkbuttons.clear()
@@ -147,9 +143,7 @@ def pca_forw_nDim(sample_data, sorted_eigenvectors, n, sample_menu, sample_check
         sample_menu.add_checkbutton(label=sample_name, variable=sample_var)
 
 
-
-
-def pca_back_nDim(sample_data, eigenvectors, n, sample_menu):
+def pca_back_nDim(sample_data, eigenvectors, n, sample_menu, sample_checkbuttons):
     s_n = []
     for i in range(1, len(sample_data) + 1):
         str = f"Вибірка {i}"
@@ -159,15 +153,20 @@ def pca_back_nDim(sample_data, eigenvectors, n, sample_menu):
     buff = np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))])
 
     ic(eigenvectors)
-    buff_back = np.transpose(np.transpose(eigenvectors)[:n]) @ buff
+    buff_back = np.transpose(eigenvectors[:n]) @ buff[:n]
 
-    for i in range(len(s_n)):
-        sample_data[s_n[i]]["data"] = buff_back[i]
+    for checkbutton in sample_checkbuttons:
+        checkbutton.destroy()
+    sample_checkbuttons.clear()
+    sample_menu.delete(0, 'end')
 
-    for i in range(n, len(buff_back)):
+    sample_data.clear()
+
+    for i in range(len(buff)):
         sample_num = i + 1
         sample_name = f"Вибірка {sample_num}"
         sample_var = tkinter.IntVar()
         sample_data[sample_name] = {"data": buff_back[i], "var": sample_var}
 
         sample_menu.add_checkbutton(label=sample_name, variable=sample_var)
+

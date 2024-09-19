@@ -7,7 +7,8 @@ import statsmodels.api as sm
 from scipy.stats import chi2
 
 sorted_eigenvectors = None
-n = 0
+
+eps, Y_viz = 0, 0
 
 def visualization(sample_data, s_n, root, e, Y):
     viz_tabs = Notebook(root)
@@ -135,6 +136,8 @@ def visualization(sample_data, s_n, root, e, Y):
 
 
 def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
+    global eps, Y_viz
+
     ic(s_n)
     tabControl = Notebook(root)
 
@@ -265,7 +268,7 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     """Регресія"""
     try:
         T4.insert(END, f"Лінійна регресія\n")
-        A, a_null, C, S_zal, Y_sq, X_sq, Y_low, Y_hat, Y_up, e, Y_viz = multRegr(buff, y_sample)
+        A, a_null, C, S_zal, Y_sq, X_sq, Y_low, Y_hat, Y_up, eps, Y_viz = multRegr(buff, y_sample)
 
         alpha = 0.05
         df = len(buff[0]) - len(buff)
@@ -398,7 +401,8 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
         T5.insert(END, f"\n\n")
     except Exception as e:
         print("The error is: ", e)
-    return e, Y_viz
+
+    return eps, Y_viz
 
 
 
@@ -413,7 +417,6 @@ def pca_two_bck(sample_data):
 def pcaFnDim(sample_data, sample_menu, sample_checkbuttons):
     user_input1 = simpledialog.askstring("N", "Введіть кількість компонент:")
     if user_input1 != "":
-        global n
         n = int(user_input1)
         global sorted_eigenvectors
         sorted_eigenvalues, sorted_eigenvectors = eigenValsVectors(sample_data)
@@ -421,6 +424,8 @@ def pcaFnDim(sample_data, sample_menu, sample_checkbuttons):
 
 
 
-def pcaBnDim(sample_data, sample_menu):
-
-   pca_back_nDim(sample_data, sorted_eigenvectors, n, sample_menu)
+def pcaBnDim(sample_data, sample_menu, sample_checkbuttons):
+    user_input1 = simpledialog.askstring("N", "Введіть кількість компонент:")
+    if user_input1 != "":
+        n = int(user_input1)
+        pca_back_nDim(sample_data, sorted_eigenvectors, n, sample_menu, sample_checkbuttons)
