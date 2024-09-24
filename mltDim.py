@@ -10,6 +10,7 @@ sorted_eigenvectors = None
 
 eps, Y_viz = 0, 0
 
+
 def visualization(sample_data, s_n, root, e, Y):
     viz_tabs = Notebook(root)
     plot1 = Frame(viz_tabs)
@@ -166,56 +167,59 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     T3.pack()
     T4.pack()
     T5.pack()
-    buff = [sample_data[s_n[i]]["data"] for i in range(len(s_n))]
 
-    buff_sort = [np.sort(buff[i]) for i in range(len(buff))]
-    for i in range(len(buff_sort)):
-        T1.insert(END, f"x{i + 1}: {buff_sort[i]}\n")
+    buff = np.round(np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))]), 4)
 
-    buff_mean = [average(buff[i]) for i in range(len(buff))]
-    for i in range(len(buff_mean)):
-        T2.insert(END, f"Середнє x{i + 1}: {round(buff_mean[i], 4)}\n")
+    try:
+        buff_sort = [np.sort(buff[i]) for i in range(len(buff))]
+        for i in range(len(buff_sort)):
+            T1.insert(END, f"x{i + 1}: {buff_sort[i]}\n")
 
-    T2.insert(END, f"\n")
-    buff_std_err = [std_err(buff[i], buff_mean[i]) for i in range(len(buff))]
-    for i in range(len(buff)):
-        T2.insert(END, f"Сер.квадратич. x{i + 1}: {round(buff_std_err[i], 4)}\n")
+        buff_mean = [average(buff[i]) for i in range(len(buff))]
+        for i in range(len(buff_mean)):
+            T2.insert(END, f"Середнє x{i + 1}: {round(buff_mean[i], 4)}\n")
 
-    disp_corr_matrix = dispCorrMatr(buff)
-
-    T2.insert(END, f"\n")
-    T2.insert(END, f"Дисперсійно-Коваріаційна матриця:\n")
-    T2.insert(END, f"\t")
-    for i in range(len(buff)):
-        T2.insert(END, f"x{i + 1}\t\t")
-    T2.insert(END, f"\n")
-    for i in range(len(buff)):
-        T2.insert(END, f"x{i + 1}\t")
-        for j in range(len(buff)):
-            T2.insert(END, f"{disp_corr_matrix[i][j]}\t\t")
         T2.insert(END, f"\n")
+        buff_std_err = [std_err(buff[i], buff_mean[i]) for i in range(len(buff))]
+        for i in range(len(buff)):
+            T2.insert(END, f"Сер.квадратич. x{i + 1}: {round(buff_std_err[i], 4)}\n")
 
-    T2.insert(END, f"\n")
-    T2.insert(END, f"Кореляційна матриця:\n")
-    T2.insert(END, f"\t")
-    corrMatr = corrMatrix(buff)
-    for i in range(len(buff)):
-        T2.insert(END, f"x{i + 1}\t\t")
-    T2.insert(END, f"\n")
-    for i in range(len(buff)):
-        T2.insert(END, f"x{i + 1}\t")
-        for j in range(len(buff)):
-            T2.insert(END, f"{corrMatr[i][j]}\t\t")
+        disp_corr_matrix = dispCorrMatr(buff)
+
         T2.insert(END, f"\n")
+        T2.insert(END, f"Дисперсійно-Коваріаційна матриця:\n")
+        T2.insert(END, f"\t")
+        for i in range(len(buff)):
+            T2.insert(END, f"x{i + 1}\t\t")
+        T2.insert(END, f"\n")
+        for i in range(len(buff)):
+            T2.insert(END, f"x{i + 1}\t")
+            for j in range(len(buff)):
+                T2.insert(END, f"{disp_corr_matrix[i][j]}\t\t")
+            T2.insert(END, f"\n")
 
-    partial_corr_coefficients = partCorrCoff(buff)
-    # Print the partial correlation coefficients for each pair
-    t_quant = 4.698
-    if len(buff[0]) > 10 and len(buff[0]) < 120:
-        t_quant = 2.105
-    elif len(buff[0]) >= 120:
-        t_quant = 1.96
+        T2.insert(END, f"\n")
+        T2.insert(END, f"Кореляційна матриця:\n")
+        T2.insert(END, f"\t")
+        corrMatr = corrMatrix(buff)
+        for i in range(len(buff)):
+            T2.insert(END, f"x{i + 1}\t\t")
+        T2.insert(END, f"\n")
+        for i in range(len(buff)):
+            T2.insert(END, f"x{i + 1}\t")
+            for j in range(len(buff)):
+                T2.insert(END, f"{corrMatr[i][j]}\t\t")
+            T2.insert(END, f"\n")
 
+        partial_corr_coefficients = partCorrCoff(buff)
+        # Print the partial correlation coefficients for each pair
+        t_quant = 4.698
+        if len(buff[0]) > 10 and len(buff[0]) < 120:
+            t_quant = 2.105
+        elif len(buff[0]) >= 120:
+            t_quant = 1.96
+    except Exception as e:
+        print("The error is: ", e)
     """Кореляція"""
     try:
         T3.insert(END, f"Часткові коефіцієнти кореляції\n")
@@ -289,7 +293,6 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
         T4.insert(END, f"Оцінка залишкової дисперсії: {S_zal:.4f}\n")
         T4.insert(END, f"\n")
 
-
         T4.insert(END, f"\nІнтервальна оцінка параметрів\n")
         t_buff = [t_quant * S_zal * np.sqrt(C[i][i]) for i in range(len(C))]
         xi = 0
@@ -348,25 +351,8 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
             T4.insert(END, f"{Y_low[i]:.4f} <= {Y_hat[i]:.4f} <= {Y_up[i]:.4f}\n")
         T4.insert(END, f"\n")
 
-        """Регресія за використання принципу машинного навчання"""
-
-        T4.insert(END, f"Лінійна регресія за використання принципу машинного навчання\n")
-        A_ml, a_null_ml, S_zal_ml = multRegrML(buff, y_sample)
-        T4.insert(END, f"x{y_sample} = {a_null_ml:.4f}")
-        xi = 0
-        for i in range(len(A_ml)):
-            xi += 1
-            if i + 1 == y_sample:
-                xi += 1
-            T4.insert(END, f" + ({A_ml[i]:.4f}) * x{xi}")
-        T4.insert(END, f"\n")
-
-        T4.insert(END, f"Оцінка залишкової дисперсії (МН): {S_zal_ml:.4f}\n")
-        T4.insert(END, f"\n")
     except Exception as e:
         print("The error is: ", e)
-
-
 
     """Метод головних компонент"""
     try:
@@ -405,7 +391,6 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     return eps, Y_viz
 
 
-
 def pca_two_frwd(sample_data):
     global fi
     fi = transIndep(sample_data)
@@ -414,18 +399,18 @@ def pca_two_frwd(sample_data):
 def pca_two_bck(sample_data):
     backTransIndep(sample_data, fi)
 
-def pcaFnDim(sample_data, sample_menu, sample_checkbuttons):
-    user_input1 = simpledialog.askstring("N", "Введіть кількість компонент:")
-    if user_input1 != "":
-        n = int(user_input1)
-        global sorted_eigenvectors
-        sorted_eigenvalues, sorted_eigenvectors = eigenValsVectors(sample_data)
-        pca_forw_nDim(sample_data, sorted_eigenvectors, n, sample_menu, sample_checkbuttons)
 
+def pcaFnDim(sample_data, sample_menu, sample_checkbuttons):
+    global sorted_eigenvectors
+
+    sorted_eigenvalues, sorted_eigenvectors = eigenValsVectors(sample_data)
+    pca_forw_nDim(sample_data, sorted_eigenvectors, sample_menu, sample_checkbuttons)
 
 
 def pcaBnDim(sample_data, sample_menu, sample_checkbuttons):
     user_input1 = simpledialog.askstring("N", "Введіть кількість компонент:")
     if user_input1 != "":
         n = int(user_input1)
+        # sorted_eigenvalues, sorted_eigenvectors = eigenValsVectors(sample_data)
+
         pca_back_nDim(sample_data, sorted_eigenvectors, n, sample_menu, sample_checkbuttons)
