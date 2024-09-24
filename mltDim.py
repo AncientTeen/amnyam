@@ -1,10 +1,12 @@
 import numpy as np
-from correl_regress_Mult import *
-from paramMatching import dispCorrMatr
 import pandas as pd
 import scipy.stats as ss
 import statsmodels.api as sm
 from scipy.stats import chi2
+
+from correl_regress_Mult import *
+from paramMatching import dispCorrMatr
+from pca import plane_equation_from_points
 
 sorted_eigenvectors = None
 
@@ -77,23 +79,6 @@ def visualization(sample_data, s_n, root, e, Y):
             toolbar2.update()
             toolbar2.pack()
 
-        # elif len(buff) == 4:
-        #     x = buff[0]
-        #     y = buff[1]
-        #     z = buff[2]
-        #
-        #     min_vals = np.min(buff[3])
-        #     max_vals = np.max(buff[3])
-        #     d = (buff[3] - min_vals) / (max_vals - min_vals)
-        #     ic('*****************d*****************', d)
-        #
-        #     plt.scatter(x, y, s=z * 0.25, alpha=d)
-        #     bubble_chart = FigureCanvasTkAgg(fig2, master=plot2)
-        #     bubble_chart.get_tk_widget().pack()
-        #     toolbar2 = NavigationToolbar2Tk(bubble_chart, plot2, pack_toolbar=False)
-        #     toolbar2.update()
-        #     toolbar2.pack()
-
     """3D scatter plot
         only if we have 3 or 4 samples"""
     if len(buff) == 3 or len(buff) == 4:
@@ -147,12 +132,14 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     tab3 = Frame(tabControl)
     tab4 = Frame(tabControl)
     tab5 = Frame(tabControl)
+    tab6 = Frame(tabControl)
 
     tabControl.add(tab1, text='Об\'єкти')
     tabControl.add(tab2, text='Протокол')
     tabControl.add(tab3, text='Кореляція')
     tabControl.add(tab4, text='Регресія')
     tabControl.add(tab5, text='МГК')
+    tabControl.add(tab6, text='Різноманіття')
 
     tabControl.place(x=10, y=550)
 
@@ -161,12 +148,14 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     T3 = Text(master=tab3, height=10, width=140)
     T4 = Text(master=tab4, height=10, width=140)
     T5 = Text(master=tab5, height=10, width=140)
+    T6 = Text(master=tab6, height=10, width=140)
 
     T1.pack()
     T2.pack()
     T3.pack()
     T4.pack()
     T5.pack()
+    T6.pack()
 
     buff = np.round(np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))]), 4)
 
@@ -219,6 +208,7 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
             t_quant = 1.96
     except Exception as e:
         print("The error is: ", e)
+
     """Кореляція"""
     try:
         T3.insert(END, f"Часткові коефіцієнти кореляції\n")
@@ -386,6 +376,31 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
         T5.insert(END, f"\n\n")
     except Exception as e:
         print("The error is: ", e)
+
+    """Різноманіття"""
+    try:
+        if len(buff) == 3:
+            a, b, c, d = plane_equation_from_points(buff)
+            A, a_null, C, S_zal, Y_sq, X_sq, Y_low, Y_hat, Y_up, eps, Y_viz = multRegr(buff, y_sample)
+
+            T6.insert(END, f"Рівняння площини:\n")
+            T6.insert(END, f"{a:.4f} * x1 + ({b:.4f}) * x2 + ({c:.4f}) * x3 + ({-d:.4f}) = 0:\n")
+            T6.insert(END, f"x1 = {d / a:.4f} + ({-b/a:.4f}) * x2 + ({-c/a:.4f}) * x3\n\n")
+
+            T6.insert(END, f"Лінійна регресія:\n")
+            T6.insert(END, f"x{y_sample} = {a_null:.4f}")
+            xi = 0
+            for i in range(len(A)):
+                xi += 1
+                if i + 1 == y_sample:
+                    xi += 1
+                T6.insert(END, f" + ({A[i]:.4f}) * x{xi}")
+
+        else:
+            pass
+    except Exception as e:
+        print("The error is: ", e)
+
 
     return eps, Y_viz
 

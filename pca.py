@@ -144,48 +144,19 @@ def pca_back_nDim(sample_data, eigenvectors, n, sample_menu, sample_checkbuttons
 
         sample_menu.add_checkbutton(label=sample_name, variable=sample_var)
 
-    a, b, c, d = calculate_plane_equation(buff_back)
-    print(f"Plane equation: {a}x + {b}y + {c}z + {d} = 0")
 
-    A, a_null = multRegr(buff_back)
-    print(f"Regression coefficients: {A}")
-    print(f"Intercept: {a_null}")
-
-
-
-def calculate_plane_equation(data):
-    # Separate the data into X (first two components) and y (third component)
-    X = data[:, :2]
-    y = data[:, 2]
-
-    # Fit a linear regression model
-    model = LinearRegression()
-    model.fit(X, y)
-
-    # Get the coefficients and intercept
-    a, b = model.coef_
-    c = -1  # We assume the plane equation is in the form ax + by + z + d = 0
-    d = model.intercept_
-
+def plane_equation_from_points(buff):
+    x1, y1, z1 = buff[0][0], buff[1][0], buff[2][0]
+    x2, y2, z2 = buff[0][1], buff[1][1], buff[2][1]
+    x3, y3, z3 = buff[0][2], buff[1][2], buff[2][2]
+    a1 = x2 - x1
+    b1 = y2 - y1
+    c1 = z2 - z1
+    a2 = x3 - x1
+    b2 = y3 - y1
+    c2 = z3 - z1
+    a = b1 * c2 - b2 * c1
+    b = a2 * c1 - a1 * c2
+    c = a1 * b2 - b1 * a2
+    d = (- a * x1 - b * y1 - c * z1)
     return a, b, c, d
-
-def multRegr(buff, y_sample=1, bound=[1, 10]):
-    Y = buff[y_sample - 1]
-    X = np.delete(buff, y_sample - 1, 0)
-    y_avr = average(Y)
-    x_avr = [average(X[i]) for i in range(len(X))]
-
-    Y_null = [Y[i] - y_avr for i in range(len(Y))]
-    X_null = [[(X[i][j] - x_avr[i]) for j in range(len(X[0]))] for i in range(len(X))]
-    A = np.linalg.inv(X_null @ np.transpose(X_null)) @ X_null @ np.transpose(Y_null)
-    a_null = y_avr - sum([A[i] * x_avr[i] for i in range(len(X))])
-
-    e = [Y[i] - a_null - sum([A[j] * X[j][i] for j in range(len(A))]) for i in range(len(Y))]
-    S_zal = (1 / (len(Y) - len(buff))) * sum([e[i] ** 2 for i in range(len(e))])
-    C = np.linalg.inv(X @ np.transpose(X))
-    Y_sq = std_err(Y, y_avr)
-    X_sq = [std_err(X[i], x_avr[i]) for i in range(len(X))]
-
-    # Y_low, Y_hat, Y_up = multRegrConfInt(Y, X, A, a_null, C, S_zal)
-
-    return A, a_null
