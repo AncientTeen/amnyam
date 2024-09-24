@@ -171,9 +171,8 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     buff = np.round(np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))]), 4)
 
     try:
-        buff_sort = [np.sort(buff[i]) for i in range(len(buff))]
-        for i in range(len(buff_sort)):
-            T1.insert(END, f"x{i + 1}: {buff_sort[i]}\n")
+        for i in range(len(buff)):
+            T1.insert(END, f"x{i + 1}: {buff[i]}\n")
 
         buff_mean = [average(buff[i]) for i in range(len(buff))]
         for i in range(len(buff_mean)):
