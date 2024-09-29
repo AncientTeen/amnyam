@@ -93,6 +93,24 @@ def generality(buff: array[array[float]]) -> None:
 
     """PCA method"""
     h_6 = []
-    ...
+    eigenvalues, eigenvectors = np.linalg.eig(corrMatr)
+
+    sorted_indices = np.argsort(eigenvalues)[::-1]
+    sorted_eigenvalues = eigenvalues[sorted_indices]
+    sorted_eigenvectors = eigenvectors[:, sorted_indices]
+
+    w = 0
+    for i in range(len(sorted_eigenvalues)):
+        if sorted_eigenvalues[i] > 0:
+            w += 1
+
+    for i in range(corrMatr):
+        sum_sq = 0
+        for j in range(w):
+            sum_sq += sorted_eigenvectors[j][i] ** 2
+        h_6.append(sum_sq)
+
+    pass
+
 
 
