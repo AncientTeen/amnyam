@@ -109,7 +109,7 @@ def generality(buff: array[array[float]]) -> None:
         for j in range(w):
             sum_sq += sorted_eigenvectors[j][i] ** 2
         h_6.append(sum_sq)
-    //
+    """"""
     ic(h_1)
     ic(h_2)
     ic(h_3)
