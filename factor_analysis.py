@@ -18,6 +18,7 @@ def generality(buff: array[array[float]]) -> None:
                 continue
         h_1.append(max_coff)
 
+
     """The triad method"""
     h_2 = []
     for i in range(len(corrMatr)):
