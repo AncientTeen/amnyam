@@ -7,6 +7,7 @@ from scipy.stats import chi2
 from correl_regress_Mult import *
 from paramMatching import dispCorrMatr
 from pca import plane_equation_from_points
+from factor_analysis import generality
 
 sorted_eigenvectors = None
 
@@ -158,7 +159,7 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     T6.pack()
 
     buff = np.round(np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))]), 4)
-
+    generality(buff)
     try:
         for i in range(len(buff)):
             T1.insert(END, f"x{i + 1}: {buff[i]}\n")
@@ -385,7 +386,7 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
 
             T6.insert(END, f"Рівняння площини:\n")
             T6.insert(END, f"{a:.4f} * x1 + ({b:.4f}) * x2 + ({c:.4f}) * x3 + ({-d:.4f}) = 0:\n")
-            T6.insert(END, f"x1 = {d / a:.4f} + ({-b/a:.4f}) * x2 + ({-c/a:.4f}) * x3\n\n")
+            T6.insert(END, f"x1 = {d / a:.4f} + ({-b / a:.4f}) * x2 + ({-c / a:.4f}) * x3\n\n")
 
             T6.insert(END, f"Лінійна регресія:\n")
             T6.insert(END, f"x{y_sample} = {a_null:.4f}")
@@ -400,7 +401,6 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
             pass
     except Exception as e:
         print("The error is: ", e)
-
 
     return eps, Y_viz
 
