@@ -52,8 +52,8 @@ def generality(buff: array[array[float]]) -> None:
     corrMatr_cpy = corrMatr.copy()
 
     max_elem = []
-    for i, el in enumerate(a):
-        el.pop(i)
+    for i, el in enumerate(corrMatr):
+        el = np.delete(el, i)
         max_elem.append(max(el))
 
     for i in range(len(corrMatr_cpy)):
@@ -101,14 +101,22 @@ def generality(buff: array[array[float]]) -> None:
 
     w = 0
     for i in range(len(sorted_eigenvalues)):
-        if sorted_eigenvalues[i] > 0:
+        if sorted_eigenvalues[i] > 1:
             w += 1
 
-    for i in range(corrMatr):
+    for i in range(len(corrMatr)):
         sum_sq = 0
         for j in range(w):
             sum_sq += sorted_eigenvectors[j][i] ** 2
         h_6.append(sum_sq)
+
+
+    ic(h_1)
+    ic(h_2)
+    ic(h_3)
+    ic(h_4)
+    ic(h_5)
+    ic(h_6)
 
     pass
 
