@@ -386,7 +386,7 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
 
             T6.insert(END, f"Рівняння площини:\n")
             T6.insert(END, f"{a:.4f} * x1 + ({b:.4f}) * x2 + ({c:.4f}) * x3 + ({-d:.4f}) = 0:\n")
-            T6.insert(END, f"x1 = {d / a:.4f} + ({-b/a:.4f}) * x2 + ({-c/a:.4f}) * x3\n\n")
+            T6.insert(END, f"x1 = {d / a:.4f} + ({-b / a:.4f}) * x2 + ({-c / a:.4f}) * x3\n\n")
 
             T6.insert(END, f"Лінійна регресія:\n")
             T6.insert(END, f"x{y_sample} = {a_null:.4f}")
@@ -401,7 +401,6 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
             pass
     except Exception as e:
         print("The error is: ", e)
-
 
     return eps, Y_viz
 
