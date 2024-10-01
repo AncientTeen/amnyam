@@ -140,7 +140,7 @@ def generality(buff: array[array[float]]) -> None:
         for k in range(len(R_gen)):
             for q in range(R_gen[k]):
                 if k != q:
-                    f_min_temp += R_gen[k][q]
+                    f_min_temp += R_gen[k][q] ** 2
 
         f_min_buff.append(f_min_temp)
 
