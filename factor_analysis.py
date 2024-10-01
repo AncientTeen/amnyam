@@ -146,4 +146,4 @@ def generality(buff: array[array[float]]) -> None:
 
     f_min = min(f_min_buff)
     index_min = np.argmin(f_min_buff)
-
+    """"""
