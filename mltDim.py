@@ -7,7 +7,7 @@ from scipy.stats import chi2
 from correl_regress_Mult import *
 from paramMatching import dispCorrMatr
 from pca import plane_equation_from_points
-from factor_analysis import generality
+from factor_analysis import factor_anal
 
 sorted_eigenvectors = None
 
@@ -159,7 +159,6 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     T6.pack()
 
     buff = np.round(np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))]), 4)
-    generality(buff)
     try:
         for i in range(len(buff)):
             T1.insert(END, f"x{i + 1}: {buff[i]}\n")
@@ -191,6 +190,7 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
         T2.insert(END, f"Кореляційна матриця:\n")
         T2.insert(END, f"\t")
         corrMatr = corrMatrix(buff)
+
         for i in range(len(buff)):
             T2.insert(END, f"x{i + 1}\t\t")
         T2.insert(END, f"\n")
@@ -401,6 +401,8 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
             pass
     except Exception as e:
         print("The error is: ", e)
+
+    ic(factor_anal(corrMatr))
 
     return eps, Y_viz
 
