@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import numpy as np
 from correl_regress_Mult import *
 
 
@@ -18,18 +19,18 @@ def generality(buff: array[array[float]]) -> None:
                 continue
         h_1.append(max_coff)
 
-
     """The triad method"""
     h_2 = []
     for i in range(len(corrMatr)):
         max_coff_1 = 0
-        max_coff_2 = 0
-        k, q = 0, 0
+        max_coff_2 = abs(corrMatr[i][-1])
+        k, q = 0, -1
         for j in range(len(corrMatr[i])):
             if i != j:
                 if max_coff_1 < abs(corrMatr[i][j]):
-                    max_coff_2 = max_coff_1
-                    q = k
+                    if max_coff_2 < max_coff_1:
+                        max_coff_2 = max_coff_1
+                        q = k
                     max_coff_1 = abs(corrMatr[i][j])
                     k = j
             else:
@@ -46,6 +47,7 @@ def generality(buff: array[array[float]]) -> None:
             else:
                 continue
         h_3.append(avr / (len(corrMatr) - 1))
+
     """Centroid method"""
     h_4 = []
 
@@ -69,7 +71,6 @@ def generality(buff: array[array[float]]) -> None:
         for j in range(len(corrMatr_cpy[i])):
             sum_row += abs(corrMatr_cpy[i][j])
         h_4.append((sum_row ** 2) / sum_all)
-
 
     """Averroids method"""
     h_5 = []
@@ -110,7 +111,6 @@ def generality(buff: array[array[float]]) -> None:
             sum_sq += sorted_eigenvectors[j][i] ** 2
         h_6.append(sum_sq)
 
-
     ic(h_1)
     ic(h_2)
     ic(h_3)
@@ -118,7 +118,39 @@ def generality(buff: array[array[float]]) -> None:
     ic(h_5)
     ic(h_6)
 
-    pass
+    h_buff = [h_1, h_2, h_3, h_4, h_5, h_6]
+    f_min_buff = []
+    ic(h_buff)
+    for i in range(6):
+        corrMatr_cpy = corrMatr.copy()
+        f_min_temp = 0
+
+        for j in range(len(corrMatr)):
+            corrMatr_cpy[j][j] = h_buff[i][j]
+        ic(corrMatr_cpy)
 
 
+        eigenvalues, eigenvectors = np.linalg.eig(corrMatr_cpy)
 
+        sorted_indices = np.argsort(eigenvalues)[::-1]
+        sorted_eigenvalues = eigenvalues[sorted_indices]
+        sorted_eigenvectors = eigenvectors[:, sorted_indices]
+        ic(sorted_eigenvectors)
+
+
+        A = np.transpose(sorted_eigenvectors)
+        A_t = sorted_eigenvectors
+        ic(A)
+        ic(A @ A_t)
+        R_gen = corrMatr_cpy - A @ A_t
+        ic(R_gen)
+        for k in range(len(R_gen)):
+            for q in range(len(R_gen[k])):
+                if k != q:
+                    f_min_temp += R_gen[k][q] ** 2
+
+        f_min_buff.append(f_min_temp)
+
+    ic(f_min_buff)
+    f_min = min(f_min_buff)
+    index_min = np.argmin(f_min_buff)

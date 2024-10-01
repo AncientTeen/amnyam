@@ -40,10 +40,10 @@ def openFile():
     if root.filename.split('.')[1] == 'txt':
         array = np.loadtxt(root.filename, dtype='float')
 
-        ic(array)
-        ic(array.shape)
-        ic(len(array.shape))
-        ic(len(array))
+        # ic(array)
+        # ic(array.shape)
+        # ic(len(array.shape))
+        # ic(len(array))
 
         if len(array.shape) == 1:
             t.append(array)
@@ -345,7 +345,7 @@ def showSample():
             str = f"Вибірка {i}"
             if sample_data[str]['var'].get() == 1:
                 s_n.append(str)
-        ic(regBound)
+        # ic(regBound)
         e, Y = outputDataMlt(sample_data, s_n, frame_3d, y_sample, regBound)
 
         visualization(sample_data, s_n, frame_3d, e, Y)
