@@ -70,7 +70,7 @@ def generality(buff: array[array[float]]) -> None:
             sum_row += abs(corrMatr_cpy[i][j])
         h_4.append((sum_row ** 2) / sum_all)
 
-
+    """"""
     """Averroids method"""
     h_5 = []
 
