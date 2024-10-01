@@ -74,13 +74,13 @@ def eigenValsVectors(sample_data):
 
     eigenvalues, eigenvectors = np.linalg.eig(disp_corr_matrix)
 
-    ic(eigenvalues)
-    ic(eigenvectors)
+    # ic(eigenvalues)
+    # ic(eigenvectors)
 
     sorted_indices = np.argsort(eigenvalues)[::-1]
     sorted_eigenvalues = eigenvalues[sorted_indices]
     sorted_eigenvectors = eigenvectors[:, sorted_indices]
-
+    # ic(sorted_eigenvectors)
     return sorted_eigenvalues, sorted_eigenvectors
 
 

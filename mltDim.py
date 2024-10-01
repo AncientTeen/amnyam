@@ -32,7 +32,7 @@ def visualization(sample_data, s_n, root, e, Y):
     plt.grid(color='grey', linestyle='-', linewidth=0.5)
 
     buff = np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))])
-    ic(buff)
+    # ic(buff)
 
     min_vals = np.min(buff, axis=1)
     max_vals = np.max(buff, axis=1)
@@ -216,7 +216,7 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
         t_par_corr = {}
         for pair, coeff in partial_corr_coefficients.items():
             T3.insert(END, f"Частковий коефіцієнт кореляції між {pair}: {coeff:.4f}\n")
-            ic(pair)
+            # ic(pair)
             t_par_corr[pair] = coeff * np.sqrt(len(buff[0]) - len(buff) - 2) / np.sqrt(1 - coeff ** 2)
         T3.insert(END, f"\n")
 
@@ -231,7 +231,7 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
         сonf_partial_corr_coefficients = confIntr_partCorrCoff(buff)
         T3.insert(END, f"Довірчі інтервали для коефіцієнтів\n")
         for pair, conf_intr in сonf_partial_corr_coefficients.items():
-            ic(conf_intr)
+            # ic(conf_intr)
             T3.insert(END, f"Довірчий інтервал між {pair}: [{conf_intr[0][0]}, {conf_intr[0][1]}]\n")
         T3.insert(END, f"\n")
 
@@ -335,7 +335,7 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
 
         low = regBound[0] - 1
         up = regBound[1]
-        ic(low, up)
+        # ic(low, up)
         T4.insert(END, f"Довірчий інтервал для значення регресії\n")
         for i in range(low, up):
             T4.insert(END, f"{Y_low[i]:.4f} <= {Y_hat[i]:.4f} <= {Y_up[i]:.4f}\n")
