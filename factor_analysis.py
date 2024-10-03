@@ -122,14 +122,14 @@ def generality(matr: list[list[float]]) -> tuple[list[list[float]], float, list[
     ic(h_6)
 
     h_buff = np.array([h_1, h_2, h_3, h_4, h_5, h_6])
-    h_temp = []
-    for i in range(len(h_buff)):
-        if max(h_buff[i]) > 1:
-            continue
-        else:
-            h_temp.append(h_buff[i])
-    ic(h_temp)
-    h_buff = h_temp
+    # h_temp = []
+    # for i in range(len(h_buff)):
+    #     if max(h_buff[i]) > 1:
+    #         continue
+    #     else:
+    #         h_temp.append(h_buff[i])
+    # ic(h_temp)
+    # h_buff = h_temp
 
     f_min_buff = []
 
@@ -223,4 +223,5 @@ def factor_anal(corr_matr: list[list[float]]) -> tuple[list[list[float]], int]:
         itr += 1
 
     A = A_buff[1]
+
     return A, itr
