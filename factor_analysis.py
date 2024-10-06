@@ -145,8 +145,10 @@ def generality(matr: list[list[float]]) -> tuple[list[list[float]], float, list[
         sorted_indices = np.argsort(eigenvalues)[::-1]
         sorted_eigenvectors = eigenvectors[:, sorted_indices]
 
-        A = np.transpose(sorted_eigenvectors)
-        A_t = sorted_eigenvectors
+        # A = np.transpose(sorted_eigenvectors)
+        A = sorted_eigenvectors
+        # A_t = sorted_eigenvectors
+        A_t = np.transpose(sorted_eigenvectors)
 
         R_gen = matr_cpy - A @ A_t
         # ic(R_gen)
@@ -168,6 +170,82 @@ def generality(matr: list[list[float]]) -> tuple[list[list[float]], float, list[
     return matr_cpy, f_min, h
 
 
+def factor_anal(corr_matr: list[list[float]]) -> tuple[list[list[float]], int, int]:
+    itr = 0
+    R_matr_buff = []
+    f_min_buff = []
+    h_buff = []
+    A_buff = []
+    w = 0
+
+    run = True
+    while run:
+        if itr < 1:
+            R_matr, f_min, h = generality(corr_matr)
+            eigenvalues, eigenvectors = np.linalg.eig(R_matr)
+            sorted_indices = np.argsort(eigenvalues)[::-1]
+            sorted_eigenvectors = eigenvectors[:, sorted_indices]
+            A = sorted_eigenvectors
+            A_buff.append(A)
+        else:
+            R_matr, f_min, h = generality(R_matr_buff[-1])
+            eigenvalues, eigenvectors = np.linalg.eig(R_matr)
+            sorted_indices = np.argsort(eigenvalues)[::-1]
+            sorted_eigenvectors = eigenvectors[:, sorted_indices]
+            ic(eigenvalues)
+            w = len([num for num in eigenvalues if num >= 0])
+            A = sorted_eigenvectors
+            A_buff.append(A)
+
+        if len(R_matr_buff) < 2:
+            R_matr_buff.append(R_matr)
+            f_min_buff.append(f_min)
+            h_buff.append(h)
+
+        else:
+            """check_1"""
+            f_check = f_min_buff[1] - f_min_buff[0]
+
+            """check_2"""
+            a_check = 0
+            for i in range(len(A_buff[0])):
+                for j in range(len(A_buff[0][0])):
+                    a_check += (A_buff[1][i][j] - A_buff[0][i][j]) ** 2
+
+            # """check_3"""
+
+            if f_check > 0 or a_check < 0.0001:
+                run = False
+            else:
+                R_matr_buff[0] = R_matr_buff[1]
+                R_matr_buff[1] = R_matr
+                f_min_buff[0] = f_min_buff[1]
+                f_min_buff[1] = f_min
+                h_buff[0] = h_buff[1]
+                h_buff[1] = h
+                A_buff[0] = A_buff[1]
+                A_buff[1] = A
+        itr += 1
+
+    A = A_buff[1]
+    ic(A)
+    return A, w, itr
+
+# def varimax(Phi, gamma=1.0, q=20, tol=1e-6):
+#     from numpy import eye
+#     p, k = Phi.shape
+#     R = eye(k)
+#     d = 0
+#     for i in range(q):
+#         d_old = d
+#         Lambda = Phi @ R
+#         u, s, vh = np.linalg.svd(Phi.T @ (Lambda ** 3 - gamma * Lambda @ np.diag(np.diag(Lambda.T @ Lambda))))
+#         R = u @ vh
+#         d = np.sum(s)
+#         if d_old != 0 and d / d_old < 1 + tol:
+#             break
+#     return Phi @ R
+#
 # def factor_anal(corr_matr: list[list[float]]) -> tuple[list[list[float]], int]:
 #     itr = 0
 #     R_matr_buff = []
@@ -180,16 +258,33 @@ def generality(matr: list[list[float]]) -> tuple[list[list[float]], float, list[
 #         if itr < 1:
 #             R_matr, f_min, h = generality(corr_matr)
 #             eigenvalues, eigenvectors = np.linalg.eig(R_matr)
+#             ic(eigenvalues)
+#
 #             sorted_indices = np.argsort(eigenvalues)[::-1]
 #             sorted_eigenvectors = eigenvectors[:, sorted_indices]
-#             A = np.transpose(sorted_eigenvectors)
+#
+#             # Select only eigenvectors with eigenvalues > 1
+#             w = sum(eigenvalues >= 0.9)
+#             ic(w)
+#             A = np.transpose(sorted_eigenvectors[:, :w])
+#
+#             # Apply varimax rotation
+#             A = varimax(A)
+#
 #             A_buff.append(A)
 #         else:
 #             R_matr, f_min, h = generality(R_matr_buff[-1])
 #             eigenvalues, eigenvectors = np.linalg.eig(R_matr)
 #             sorted_indices = np.argsort(eigenvalues)[::-1]
 #             sorted_eigenvectors = eigenvectors[:, sorted_indices]
-#             A = np.transpose(sorted_eigenvectors)
+#
+#             # Select only eigenvectors with eigenvalues > 1
+#             w = sum(eigenvalues > 1)
+#             A = np.transpose(sorted_eigenvectors[:, :w])
+#
+#             # Apply varimax rotation
+#             A = varimax(A)
+#
 #             A_buff.append(A)
 #
 #         if len(R_matr_buff) < 2:
@@ -225,93 +320,3 @@ def generality(matr: list[list[float]]) -> tuple[list[list[float]], float, list[
 #     A = A_buff[1]
 #
 #     return A, itr
-
-def varimax(Phi, gamma=1.0, q=20, tol=1e-6):
-    from numpy import eye
-    p, k = Phi.shape
-    R = eye(k)
-    d = 0
-    for i in range(q):
-        d_old = d
-        Lambda = Phi @ R
-        u, s, vh = np.linalg.svd(Phi.T @ (Lambda ** 3 - gamma * Lambda @ np.diag(np.diag(Lambda.T @ Lambda))))
-        R = u @ vh
-        d = np.sum(s)
-        if d_old != 0 and d / d_old < 1 + tol:
-            break
-    return Phi @ R
-
-def factor_anal(corr_matr: list[list[float]]) -> tuple[list[list[float]], int]:
-    itr = 0
-    R_matr_buff = []
-    f_min_buff = []
-    h_buff = []
-    A_buff = []
-
-    run = True
-    while run:
-        if itr < 1:
-            R_matr, f_min, h = generality(corr_matr)
-            eigenvalues, eigenvectors = np.linalg.eig(R_matr)
-            ic(eigenvalues)
-
-            sorted_indices = np.argsort(eigenvalues)[::-1]
-            sorted_eigenvectors = eigenvectors[:, sorted_indices]
-
-            # Select only eigenvectors with eigenvalues > 1
-            w = sum(eigenvalues >= 0.9)
-            ic(w)
-            A = np.transpose(sorted_eigenvectors[:, :w])
-
-            # Apply varimax rotation
-            A = varimax(A)
-
-            A_buff.append(A)
-        else:
-            R_matr, f_min, h = generality(R_matr_buff[-1])
-            eigenvalues, eigenvectors = np.linalg.eig(R_matr)
-            sorted_indices = np.argsort(eigenvalues)[::-1]
-            sorted_eigenvectors = eigenvectors[:, sorted_indices]
-
-            # Select only eigenvectors with eigenvalues > 1
-            w = sum(eigenvalues > 1)
-            A = np.transpose(sorted_eigenvectors[:, :w])
-
-            # Apply varimax rotation
-            A = varimax(A)
-
-            A_buff.append(A)
-
-        if len(R_matr_buff) < 2:
-            R_matr_buff.append(R_matr)
-            f_min_buff.append(f_min)
-            h_buff.append(h)
-
-        else:
-            """check_1"""
-            f_check = f_min_buff[1] - f_min_buff[0]
-
-            """check_2"""
-            a_check = 0
-            for i in range(len(A_buff[0])):
-                for j in range(len(A_buff[0][0])):
-                    a_check += (A_buff[1][i][j] - A_buff[0][i][j]) ** 2
-
-            # """check_3"""
-
-            if f_check > 0 or a_check < 0.0001:
-                run = False
-            else:
-                R_matr_buff[0] = R_matr_buff[1]
-                R_matr_buff[1] = R_matr
-                f_min_buff[0] = f_min_buff[1]
-                f_min_buff[1] = f_min
-                h_buff[0] = h_buff[1]
-                h_buff[1] = h
-                A_buff[0] = A_buff[1]
-                A_buff[1] = A
-        itr += 1
-
-    A = A_buff[1]
-
-    return A, itr

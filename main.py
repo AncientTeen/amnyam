@@ -22,8 +22,10 @@ fi = None
 eigenvectors = None
 
 
-def prevent_menu_close(event):
-    pass
+def prevent_menu_close(event, sample_name):
+    event.widget.event_generate('<<PreventClose>>')  # Prevent menu from closing
+    activate_sample(sample_name)  # Activate the selected sample
+    event.widget.master.after(100, event.widget.master.quit)  # Delay closing the menu for a short time
 
 
 def activate_sample(sample_name):
@@ -40,11 +42,6 @@ def openFile():
     if root.filename.split('.')[1] == 'txt':
         array = np.loadtxt(root.filename, dtype='float')
 
-        # ic(array)
-        # ic(array.shape)
-        # ic(len(array.shape))
-        # ic(len(array))
-
         if len(array.shape) == 1:
             t.append(array)
         elif len(array.shape) > 1:
@@ -54,16 +51,31 @@ def openFile():
                     t_buff.append(array[j][i])
                 t.append(t_buff)
 
+    # for i in range(len(t)):
+    #     sample_num = len(sample_data) + 1
+    #     sample_name = f"Вибірка {sample_num}"
+    #     sample_var = tkinter.IntVar()
+    #     arr = []
+    #     for j in range(len(t[0])):
+    #         arr.append(t[i][j])
+    #     sample_data[sample_name] = {"data": arr, "var": sample_var}
+    #
+    #     checkbutton = Checkbutton(text=sample_name, variable=sample_var)
+    #     sample_checkbuttons.append(checkbutton)
+    #
+    #     sample_menu.add_checkbutton(label=sample_name, variable=sample_var)
+
+
+
     for i in range(len(t)):
         sample_num = len(sample_data) + 1
         sample_name = f"Вибірка {sample_num}"
         sample_var = tkinter.IntVar()
-        arr = []
-        for j in range(len(t[0])):
-            arr.append(t[i][j])
+        arr = t[i]
         sample_data[sample_name] = {"data": arr, "var": sample_var}
 
-        checkbutton = Checkbutton(text=sample_name, variable=sample_var)
+        checkbutton = Checkbutton(text=sample_name, variable=sample_var,
+                                  command=lambda: prevent_menu_close(event, sample_name))
         sample_checkbuttons.append(checkbutton)
 
         sample_menu.add_checkbutton(label=sample_name, variable=sample_var)

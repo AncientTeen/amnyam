@@ -136,6 +136,7 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     tab4 = Frame(tabControl)
     tab5 = Frame(tabControl)
     tab6 = Frame(tabControl)
+    tab7 = Frame(tabControl)
 
     tabControl.add(tab1, text='Об\'єкти')
     tabControl.add(tab2, text='Протокол')
@@ -143,6 +144,7 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     tabControl.add(tab4, text='Регресія')
     tabControl.add(tab5, text='МГК')
     tabControl.add(tab6, text='Різноманіття')
+    tabControl.add(tab7, text='Факторний аналіз')
 
     tabControl.place(x=10, y=550)
 
@@ -152,6 +154,7 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     T4 = Text(master=tab4, height=10, width=140)
     T5 = Text(master=tab5, height=10, width=140)
     T6 = Text(master=tab6, height=10, width=140)
+    T7 = Text(master=tab7, height=10, width=140)
 
     T1.pack()
     T2.pack()
@@ -159,6 +162,7 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     T4.pack()
     T5.pack()
     T6.pack()
+    T7.pack()
 
     buff = np.round(np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))]), 4)
     try:
@@ -418,8 +422,25 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     #     [0.396, 0.783, -0.205, 0.035, 0.505, 0.686, 0.783, -0.005, 0.614, 0.405, 1]
     # ])
 
-    ic(factor_anal(corrMatr))
     # ic(factor_anal(correlation_matrix))
+
+
+    """Факторний аналіз"""
+    try:
+        A, w, itr = factor_anal(corrMatr)
+        T7.insert(END, f"Матриця факторного відображення:\n")
+
+        for i in range(w):
+            T7.insert(END, f"\tF{i + 1}\t")
+        T7.insert(END, f"\n")
+        for i in range(len(A)):
+            T7.insert(END, f"x{i + 1}\t")
+            for j in range(w):
+                T7.insert(END, f"{A[i][j]:.4f}\t\t")
+            T7.insert(END, f"\n")
+
+    except Exception as e:
+        print("The error is: ", e)
 
     return eps, Y_viz
 
