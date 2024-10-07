@@ -102,7 +102,7 @@ def generality(matr: list[list[float]]) -> tuple[list[list[float]], float, list[
     sorted_indices = np.argsort(eigenvalues)[::-1]
     sorted_eigenvalues = eigenvalues[sorted_indices]
     sorted_eigenvectors = eigenvectors[:, sorted_indices]
-    ic(sorted_eigenvalues)
+    # ic(sorted_eigenvalues)
     w = 0
     for i in range(len(sorted_eigenvalues)):
         if sorted_eigenvalues[i] >= 0.9:
@@ -114,12 +114,12 @@ def generality(matr: list[list[float]]) -> tuple[list[list[float]], float, list[
             sum_sq += sorted_eigenvectors[j][i] ** 2
         h_6.append(sum_sq)
 
-    ic(h_1)
-    ic(h_2)
-    ic(h_3)
-    ic(h_4)
-    ic(h_5)
-    ic(h_6)
+    # ic(h_1)
+    # ic(h_2)
+    # ic(h_3)
+    # ic(h_4)
+    # ic(h_5)
+    # ic(h_6)
 
     h_buff = np.array([h_1, h_2, h_3, h_4, h_5, h_6])
     # h_temp = []
@@ -192,7 +192,7 @@ def factor_anal(corr_matr: list[list[float]]) -> tuple[list[list[float]], int, i
             eigenvalues, eigenvectors = np.linalg.eig(R_matr)
             sorted_indices = np.argsort(eigenvalues)[::-1]
             sorted_eigenvectors = eigenvectors[:, sorted_indices]
-            ic(eigenvalues)
+            # ic(eigenvalues)
             w = len([num for num in eigenvalues if num >= 0])
             A = sorted_eigenvectors
             A_buff.append(A)
@@ -228,5 +228,5 @@ def factor_anal(corr_matr: list[list[float]]) -> tuple[list[list[float]], int, i
         itr += 1
 
     A = A_buff[1]
-    ic(A)
+    # ic(A)
     return A, w, itr

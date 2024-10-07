@@ -6,8 +6,9 @@ from scipy.stats import chi2
 
 from correl_regress_Mult import *
 from paramMatching import dispCorrMatr
-from pca import plane_equation_from_points
 from factor_analysis import factor_anal
+from pca import plane_equation_from_points
+from claster_class_analysis import distance_matrix, single_linkage_clustering
 
 sorted_eigenvectors = None
 
@@ -164,7 +165,11 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     T6.pack()
     T7.pack()
 
+    buff = np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))])
+    result = single_linkage_clustering(buff, metric=1, num_clusters=2)
+
     buff = np.round(np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))]), 4)
+    ic(result)
     try:
         for i in range(len(buff)):
             T1.insert(END, f"x{i + 1}: {buff[i]}\n")
