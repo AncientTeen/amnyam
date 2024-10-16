@@ -102,7 +102,7 @@ def generality(matr: list[list[float]]) -> tuple[list[list[float]], float, list[
     sorted_indices = np.argsort(eigenvalues)[::-1]
     sorted_eigenvalues = eigenvalues[sorted_indices]
     sorted_eigenvectors = eigenvectors[:, sorted_indices]
-    # ic(sorted_eigenvalues)
+    ic(sorted_eigenvalues)
     # ic(np.mean(sorted_eigenvalues))
     w = 0
     for i in range(len(sorted_eigenvalues)):

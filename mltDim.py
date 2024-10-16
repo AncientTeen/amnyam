@@ -433,6 +433,8 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     """Факторний аналіз"""
     try:
         A, w, itr, eigenvals_arr = factor_anal(corrMatr)
+        eigenvals_arr[::-1].sort()
+
         T7.insert(END, f"Матриця факторного відображення:\n")
 
         for i in range(w):
@@ -471,15 +473,16 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
         T7.insert(END, f"\n")
 
         T7.insert(END, f"\nВласні числа: \t")
-        for i in range(len(buff)):
-            T5.insert(END, f"{sorted_eigenvalues[i]:.4f}\t\t")
-        T5.insert(END, f"\n")
+        for i in range(w):
+            T7.insert(END, f"{eigenvals_arr[i]:.4f}\t\t")
+        T7.insert(END, f"\n")
 
-        T5.insert(END, f"\n% на напрям:  \t")
-        percentDir = [sorted_eigenvalues[i] / len(sorted_eigenvalues) for i in range(len(sorted_eigenvalues))]
-        for i in range(len(buff)):
-            T5.insert(END, f"{percentDir[i] * 100:.4f}%\t\t")
-        T5.insert(END, f"\n")
+        T7.insert(END, f"\n% на напрям:  \t")
+        # percentDir = [eigenvals_arr[i] / len(eigenvals_arr) for i in range(len(eigenvals_arr))]
+        percentDir = [eigenvals_arr[i] / sum(eigenvals_arr) for i in range(len(eigenvals_arr))]
+        for i in range(w):
+            T7.insert(END, f"{percentDir[i] * 100:.4f}%\t\t")
+        T7.insert(END, f"\n")
 
 
 
