@@ -165,11 +165,11 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     T6.pack()
     T7.pack()
 
-    buff = np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))])
-    result = single_linkage_clustering(buff, metric=1, num_clusters=2)
 
     buff = np.round(np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))]), 4)
-    ic(result)
+    # result = single_linkage_clustering(buff, metric=1, num_clusters=2)
+
+    # ic(result)
     try:
         for i in range(len(buff)):
             T1.insert(END, f"x{i + 1}: {buff[i]}\n")
