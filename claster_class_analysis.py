@@ -6,7 +6,7 @@ from icecream import ic
 
 def distance_matrix(buff_w: list[list[float]], metric: int) -> list[list[float]]:
     # buff_w = np.column_stack(buff)
-    ic(buff_w)
+    # ic(buff_w)
     N = len(buff_w)
     dist_matrix = None
 
@@ -57,7 +57,7 @@ def single_linkage_clustering(buff, metric, num_clusters=2):
     clusters = {i: [i] for i in range(N)}
 
     # Debug: Check the structure of clusters and distance matrix
-    ic(N, clusters, dist_matrix)
+    # ic(N, clusters, dist_matrix)
 
     while len(clusters) > num_clusters:
         min_dist = float('inf')

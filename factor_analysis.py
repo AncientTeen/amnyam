@@ -176,6 +176,7 @@ def factor_anal(corr_matr: list[list[float]]) -> tuple[list[list[float]], int, i
     f_min_buff = []
     h_buff = []
     A_buff = []
+    eigenvals_buff = []
     w = 0
 
     run = True
@@ -187,6 +188,7 @@ def factor_anal(corr_matr: list[list[float]]) -> tuple[list[list[float]], int, i
             sorted_eigenvectors = eigenvectors[:, sorted_indices]
             A = sorted_eigenvectors
             A_buff.append(A)
+            eigenvals_buff.append(eigenvalues)
         else:
             R_matr, f_min, h = generality(R_matr_buff[-1])
             eigenvalues, eigenvectors = np.linalg.eig(R_matr)
@@ -196,6 +198,8 @@ def factor_anal(corr_matr: list[list[float]]) -> tuple[list[list[float]], int, i
             w = len([num for num in eigenvalues if num >= 0])
             A = sorted_eigenvectors
             A_buff.append(A)
+            eigenvals_buff.append(eigenvalues)
+
 
         if len(R_matr_buff) < 2:
             R_matr_buff.append(R_matr)
@@ -225,8 +229,13 @@ def factor_anal(corr_matr: list[list[float]]) -> tuple[list[list[float]], int, i
                 h_buff[1] = h
                 A_buff[0] = A_buff[1]
                 A_buff[1] = A
+                eigenvals_buff[0] = eigenvals_buff[1]
+                eigenvals_buff[1] = eigenvalues
+
+
         itr += 1
 
     A = A_buff[1]
+    eigenvals_arr = eigenvals_buff[1]
     # ic(A)
-    return A, w, itr
+    return A, w, itr, eigenvals_arr

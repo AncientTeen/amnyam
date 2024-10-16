@@ -165,11 +165,11 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
     T6.pack()
     T7.pack()
 
-    buff = np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))])
-    result = single_linkage_clustering(buff, metric=1, num_clusters=2)
 
     buff = np.round(np.array([sample_data[s_n[i]]["data"] for i in range(len(s_n))]), 4)
-    ic(result)
+    # result = single_linkage_clustering(buff, metric=1, num_clusters=2)
+
+    # ic(result)
     try:
         for i in range(len(buff)):
             T1.insert(END, f"x{i + 1}: {buff[i]}\n")
@@ -432,17 +432,60 @@ def outputDataMlt(sample_data, s_n, root, y_sample=1, regBound=[1, 10]):
 
     """Факторний аналіз"""
     try:
-        A, w, itr = factor_anal(corrMatr)
+        A, w, itr, eigenvals_arr = factor_anal(corrMatr)
         T7.insert(END, f"Матриця факторного відображення:\n")
 
         for i in range(w):
             T7.insert(END, f"\tF{i + 1}\t")
+        T7.insert(END, f"\th^2_k\t")
+
+        h = []
+        for i in range(len(A)):
+            sum_h = 0
+            for j in range(w):
+                sum_h += A[i][j] ** 2
+            h.append(sum_h)
+
+        V = []
+        for i in range(w):
+            sum_V = 0
+            for j in range(len(A)):
+                sum_V += A[j][i] ** 2
+            V.append(sum_V)
+
+
+
         T7.insert(END, f"\n")
         for i in range(len(A)):
             T7.insert(END, f"x{i + 1}\t")
             for j in range(w):
                 T7.insert(END, f"{A[i][j]:.4f}\t\t")
+            T7.insert(END, f"{h[i]:.4f}\t\t")
+
             T7.insert(END, f"\n")
+        T7.insert(END, f"\n")
+
+        T7.insert(END, f"V_v\t")
+        for i in range(w):
+            T7.insert(END, f"{V[i]:.4f}\t\t")
+        T7.insert(END, f"\n")
+
+        T7.insert(END, f"\nВласні числа: \t")
+        for i in range(len(buff)):
+            T5.insert(END, f"{sorted_eigenvalues[i]:.4f}\t\t")
+        T5.insert(END, f"\n")
+
+        T5.insert(END, f"\n% на напрям:  \t")
+        percentDir = [sorted_eigenvalues[i] / len(sorted_eigenvalues) for i in range(len(sorted_eigenvalues))]
+        for i in range(len(buff)):
+            T5.insert(END, f"{percentDir[i] * 100:.4f}%\t\t")
+        T5.insert(END, f"\n")
+
+
+
+
+
+
 
     except Exception as e:
         print("The error is: ", e)
